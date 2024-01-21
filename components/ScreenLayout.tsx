@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 
-interface PageLayoutProps {
+interface ScreenLayoutProps {
   children: ReactNode;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
+const ScreenLayout: React.FC<ScreenLayoutProps> = ({ children }) => {
   return (
     <View style={styles.container}>
       <StatusBar />
@@ -14,7 +14,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   );
 };
 
-export default PageLayout;
+export default ScreenLayout;
 
 const styles = StyleSheet.create({
   container: {

@@ -7,7 +7,14 @@ import AddMovieScreen from "pages/AddMovieScreen/AddMovieScreen";
 import MovieDetailsScreen from "pages/MovieDetailsScreen/MovieDetailsScreen";
 import UpdateMovieScreen from "pages/UpdateMovieScreen/UpdateMovieScreen";
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  [SCREENS.HOME_SCREEN]: {movieId:string};
+  [SCREENS.ADD_MOVIE_SCREEN]: undefined;
+  [SCREENS.MOVIE_DETAILS_SCREEN]: { movieId: string };
+  [SCREENS.UPDATE_MOVIE_SCREEN]: { movieId: string };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Router: React.FC = () => {
   return (
@@ -17,6 +24,7 @@ const Router: React.FC = () => {
           options={{ headerShown: false }}
           name={SCREENS.HOME_SCREEN}
           component={HomeScreen}
+          
         />
         <Stack.Screen
           name={SCREENS.ADD_MOVIE_SCREEN}
@@ -29,6 +37,8 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={SCREENS.MOVIE_DETAILS_SCREEN}
           component={MovieDetailsScreen}
+          options={{ headerTitle: "Details" }}
+          // initialParams={{movieId:'some id'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

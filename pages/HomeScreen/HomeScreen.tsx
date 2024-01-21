@@ -1,24 +1,52 @@
 import React, { useState } from "react";
 import Button from "components/Button/Button";
 import MovieCard from "components/MovieCard/MovieCard";
-import PageLayout from "components/PageLayout";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import ScreenLayout from "components/ScreenLayout";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Searchbar } from "react-native-paper";
-import { COLORS } from "static/colors";
+import { SCREENS } from "static/screens";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "static/Router";
 
-const HomeScreen: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, SCREENS.HOME_SCREEN>;
+
+const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const renderItem = () => {
-    return <MovieCard />;
+    return (
+      <MovieCard
+        onPress={() => {
+          navigate({
+            key: SCREENS.MOVIE_DETAILS_SCREEN,
+            params: { movieId: "ksjd" },
+            name: SCREENS.MOVIE_DETAILS_SCREEN,
+          });
+        }}
+      />
+    );
   };
 
   return (
-    <PageLayout>
+    <ScreenLayout>
       <Searchbar
+        style={styles.search}
         placeholder="Search"
         onChangeText={setSearchQuery}
         value={searchQuery}
+      />
+      <Button
+        style={styles.button}
+        compact
+        mode="contained"
+        label="Add Movie"
+        children
+        onPress={() =>
+          navigate({
+            key: SCREENS.ADD_MOVIE_SCREEN,
+            name: SCREENS.ADD_MOVIE_SCREEN,
+          })
+        }
       />
       <View style={{ flex: 1 }}>
         <FlatList
@@ -27,8 +55,7 @@ const HomeScreen: React.FC = () => {
           numColumns={2}
         />
       </View>
-      {/* <Button type={COLORS.MAIN} label="Details" /> */}
-    </PageLayout>
+    </ScreenLayout>
   );
 };
 
@@ -36,4 +63,12 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   moviesContainer: {},
+  search: {
+    marginHorizontal: 5,
+    marginTop: 20,
+  },
+  button: {
+    marginVertical: 20,
+    marginHorizontal: 5,
+  },
 });

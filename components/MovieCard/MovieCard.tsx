@@ -1,10 +1,13 @@
 import { useDimensions } from "hooks/ui";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from "react-native-gesture-handler";
 import { Card } from "react-native-paper";
 
-const MovieCard: React.FC = () => {
+const MovieCard: React.FC<TouchableOpacityProps> = ({ onPress }) => {
   const { screenWidth } = useDimensions();
 
   const styles = StyleSheet.create({
@@ -28,9 +31,13 @@ const MovieCard: React.FC = () => {
       fontSize: 16,
     },
   });
-  
+
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.8}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.container}
+      activeOpacity={0.8}
+    >
       <Card>
         <Card.Cover
           source={{

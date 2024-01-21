@@ -1,23 +1,18 @@
 import React from "react";
-import { Pressable, PressableProps, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { COLORS } from "static/colors";
-
-interface ButtonProps extends PressableProps {
+import { Button as ButtonBase, ButtonProps } from "react-native-paper";
+interface Props extends ButtonProps {
   label: string;
-  type?: COLORS;
 }
 
-const Button: React.FC<ButtonProps> = ({ label, onPress, type=COLORS.ERROR, ...rest }) => {
+const Button: React.FC<Props> = ({ label, onPress, ...rest }) => {
   return (
     <TouchableOpacity activeOpacity={0.8}>
-      <Pressable
-        style={StyleSheet.compose(styles.button, { backgroundColor: type })}
-        onPress={onPress}
-        {...rest}
-      >
-        <Text style={styles.text}>{label}</Text>
-      </Pressable>
+      <ButtonBase labelStyle={{ fontSize: 16 }} onPress={onPress} {...rest}>
+        {label}
+      </ButtonBase>
     </TouchableOpacity>
   );
 };
@@ -25,15 +20,6 @@ const Button: React.FC<ButtonProps> = ({ label, onPress, type=COLORS.ERROR, ...r
 export default Button;
 
 const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 6,
-    elevation: 3,
-    backgroundColor: COLORS.MAIN,
-  },
   text: {
     fontSize: 16,
     lineHeight: 21,
