@@ -1,8 +1,8 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Button from "components/Button/Button";
-import { saveData } from "firebase/services";
+import { createMovie, saveData, uploadImage } from "firebase/services";
 import { useDimensions } from "hooks/ui";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import {
   Image,
@@ -27,13 +27,15 @@ interface FormState extends FieldValues {
   creator?: string;
   title?: string;
   description?: string;
-  image?: ImagePicker.ImagePickerSuccessResult;
+  image?: string;
   genre?: string;
 }
 
-const AddMovieScreen: React.FC<Props> = () => {
+const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [image, setImage] =
     React.useState<ImagePicker.ImagePickerSuccessResult>();
+
   const {
     handleSubmit,
     control,
@@ -46,13 +48,13 @@ const AddMovieScreen: React.FC<Props> = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      aspect: [4, 4],
+      quality: 0.6,
     });
 
     if (!result.canceled) {
       setImage(result);
-      setValue("image", result);
+      setValue("image", result.assets[0].uri);
     }
   };
   const { screenWidth } = useDimensions();
@@ -73,21 +75,34 @@ const AddMovieScreen: React.FC<Props> = () => {
   const onSubmit = async (data: FormState) => {
     try {
       if (data.image && image) {
-        const response = await fetch(image.assets[0].uri)
-        const blob = await response.blob();
+        setLoading(true);
+        const firebaseUrl = await uploadImage(data.image);
+        const movieId: string | undefined = await createMovie({
+          ...data,
+          image: firebaseUrl,
+        });
 
-        console.log(blob)
-        // handle image upload here
+        if (movieId) {
+          // navigate to newly created movie
+          navigate({
+            key: SCREENS.MOVIE_DETAILS_SCREEN,
+            params: { movieId: movieId },
+            name: SCREENS.MOVIE_DETAILS_SCREEN,
+          });
+        }
       }
-    } catch (error) {}
-
-    reset({
-      creator: "",
-      title: "",
-      description: "",
-      image: "",
-      genre: "",
-    });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      reset({
+        creator: "",
+        title: "",
+        description: "",
+        image: "",
+        genre: "",
+      });
+    }
   };
 
   return (
@@ -104,6 +119,7 @@ const AddMovieScreen: React.FC<Props> = () => {
           />
         </TouchableOpacity>
         <Controller
+          defaultValue={"some Title"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -119,6 +135,7 @@ const AddMovieScreen: React.FC<Props> = () => {
           name="title"
         />
         <Controller
+          defaultValue={"some Description"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -136,6 +153,7 @@ const AddMovieScreen: React.FC<Props> = () => {
           name="description"
         />
         <Controller
+          defaultValue={"some Genre"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -151,6 +169,7 @@ const AddMovieScreen: React.FC<Props> = () => {
           name="genre"
         />
         <Controller
+          defaultValue={"some Creator name"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -166,6 +185,7 @@ const AddMovieScreen: React.FC<Props> = () => {
           name="creator"
         />
         <Button
+          loading={loading}
           style={styles.button}
           mode={"contained"}
           children
