@@ -49,7 +49,11 @@ const MovieDetailsScreen: React.FC<Props> = ({ route }) => {
             <Text style={styles.ratingValue}>{`(${3.4}/5)`}</Text>
           </View>
         </View>
-        <Comments />
+        <Comments
+          comments={[
+            { author: "author", comment: "some comment here", rating: 3 },
+          ]}
+        />
         <AddComment />
       </ScrollView>
     </ScreenLayout>

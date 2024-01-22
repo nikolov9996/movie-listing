@@ -2,24 +2,21 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Card } from "react-native-paper";
 import { AirbnbRating } from "react-native-ratings";
+import { CommentType } from "static/types";
 
-interface CommentsProps {
-  author: string;
-  text: string;
-  rating: number;
-}
-
-const Comments: React.FC = () => {
-  return (
-    <Card style={styles.container}>
-      <View style={styles.title}>
-        <Text style={styles.author}>Author here</Text>
-        <AirbnbRating defaultRating={4} showRating={false} size={15} />
-      </View>
-      <Text style={styles.text}>comment here</Text>
-    </Card>
-  );
-};
+const Comments: React.FC<{ comments: CommentType[] }> = ({ comments }) => (
+  <>
+    {comments.map(({ author, comment, rating }, index) => (
+      <Card style={styles.container} key={index}>
+        <View style={styles.title}>
+          <Text style={styles.author}>{author}</Text>
+          <AirbnbRating defaultRating={rating} showRating={false} size={15} />
+        </View>
+        <Text style={styles.text}>{comment}</Text>
+      </Card>
+    ))}
+  </>
+);
 
 export default Comments;
 
