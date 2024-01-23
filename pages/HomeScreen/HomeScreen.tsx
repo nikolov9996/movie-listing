@@ -2,24 +2,37 @@ import React, { useState } from "react";
 import Button from "components/Button/Button";
 import MovieCard from "components/MovieCard/MovieCard";
 import ScreenLayout from "components/ScreenLayout";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { Searchbar } from "react-native-paper";
 import { SCREENS } from "static/screens";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "static/Router";
+import useHomeScreen from "./HomeScreen.logic";
+import LoadingLayout from "pages/LoadingLayout";
+import { MovieType } from "static/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, SCREENS.HOME_SCREEN>;
 
 const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { loading, movies } = useHomeScreen();
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const renderItem = () => {
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  const renderItem = (item: MovieType) => {
     return (
       <MovieCard
+        movie={item}
         onPress={() => {
           navigate({
             key: SCREENS.MOVIE_DETAILS_SCREEN,
-            params: { movieId: "ksjd" },
+            params: { movieId: item.movieId as string },
             name: SCREENS.MOVIE_DETAILS_SCREEN,
           });
         }}
@@ -48,13 +61,20 @@ const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           })
         }
       />
-      <View style={{ flex: 1 }}>
-        <FlatList
-          renderItem={renderItem}
-          data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 45, 23]}
-          numColumns={2}
-        />
-      </View>
+      {loading ? (
+        <LoadingLayout />
+      ) : (
+        <View style={{ flex: 1 }}>
+          <FlatList
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            renderItem={({ item }) => renderItem(item)}
+            data={movies}
+            numColumns={2}
+          />
+        </View>
+      )}
     </ScreenLayout>
   );
 };

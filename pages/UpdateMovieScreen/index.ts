@@ -1,1 +1,1 @@
-export * from "./UpdateMovieScreen";
+export * from "./EditMovieScreen";

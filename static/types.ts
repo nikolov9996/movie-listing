@@ -12,12 +12,19 @@ export type MovieType = {
   description?: string;
   image?: string;
   genre?: string;
+  movieId?:string;
 };
 
-export type CreateMovieType = {
+export interface CreateMovieType {
   creator?: string;
   title?: string;
   description?: string;
   image?: string;
   genre?: string;
-};
+}
+
+export interface UpdateMovieType extends CreateMovieType {
+  rating?: number;
+  comments?: CommentType[];
+  movieId?: string;
+}

@@ -1,26 +1,19 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import Button from "components/Button/Button";
-import { createMovie, saveData, uploadImage } from "firebase/services";
-import { useDimensions } from "hooks/ui";
 import React, { useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
-import {
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { TextInput } from "react-native-paper";
+import { Image, KeyboardAvoidingView, StyleSheet, Text } from "react-native";
 import { RootStackParamList } from "static/Router";
 import { SCREENS } from "static/screens";
 import * as ImagePicker from "expo-image-picker";
+import { useDimensions } from "hooks/ui";
+import { editMovie, uploadImage } from "firebase/services";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { TextInput } from "react-native-paper";
+import Button from "components/Button/Button";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
-  SCREENS.ADD_MOVIE_SCREEN
+  SCREENS.UPDATE_MOVIE_SCREEN
 >;
 
 interface FormState extends FieldValues {
@@ -31,7 +24,7 @@ interface FormState extends FieldValues {
   genre?: string;
 }
 
-const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
+const EditMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [image, setImage] =
     React.useState<ImagePicker.ImagePickerSuccessResult>();
@@ -81,7 +74,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
       if (data.image && image) {
         setLoading(true);
         const firebaseUrl = await uploadImage(data.image);
-        const movieId: string | undefined = await createMovie({
+        const movieId: string | undefined = await editMovie({
           ...data,
           image: firebaseUrl,
         });
@@ -106,7 +99,6 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
         image: "",
         genre: "",
       });
-      setImage(undefined);
     }
   };
 
@@ -124,7 +116,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           />
         </TouchableOpacity>
         <Controller
-          defaultValue={"some Title"}
+          defaultValue={"1"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -141,7 +133,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           name="title"
         />
         <Controller
-          defaultValue={"some Description but kinda long"}
+          defaultValue={"1"}
           control={control}
           rules={{ required: true, minLength: 20 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -160,7 +152,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           name="description"
         />
         <Controller
-          defaultValue={"some Genre"}
+          defaultValue={"1"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -177,7 +169,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           name="genre"
         />
         <Controller
-          defaultValue={"some Creator name"}
+          defaultValue={"1"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -198,7 +190,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           style={styles.button}
           mode={"contained"}
           children
-          label="Create"
+          label="Save"
           onPress={handleSubmit(onSubmit)}
         />
       </ScrollView>
@@ -206,4 +198,4 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
   );
 };
 
-export default AddMovieScreen;
+export default EditMovieScreen;

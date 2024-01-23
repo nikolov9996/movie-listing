@@ -6,8 +6,13 @@ import {
   TouchableOpacityProps,
 } from "react-native-gesture-handler";
 import { Card } from "react-native-paper";
+import { MovieType } from "static/types";
 
-const MovieCard: React.FC<TouchableOpacityProps> = ({ onPress }) => {
+interface MovieCardProps extends TouchableOpacityProps {
+  movie: MovieType;
+}
+
+const MovieCard: React.FC<MovieCardProps> = ({ onPress, movie }) => {
   const { screenWidth } = useDimensions();
 
   const styles = StyleSheet.create({
@@ -41,11 +46,11 @@ const MovieCard: React.FC<TouchableOpacityProps> = ({ onPress }) => {
       <Card>
         <Card.Cover
           source={{
-            uri: "https://fastly.picsum.photos/id/1015/200/300.jpg?hmac=Rx9zhHRx_cf574gBuoMH5d7HlhZitGMA81AgPmhJDSI",
+            uri: movie.image,
           }}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.cardTitle}>Some Textt</Text>
+          <Text style={styles.cardTitle}>{movie.title}</Text>
         </View>
       </Card>
     </TouchableOpacity>

@@ -5,7 +5,7 @@ import { SCREENS } from "./screens";
 import HomeScreen from "pages/HomeScreen/HomeScreen";
 import AddMovieScreen from "pages/AddMovieScreen/AddMovieScreen";
 import MovieDetailsScreen from "pages/MovieDetailsScreen/MovieDetailsScreen";
-import UpdateMovieScreen from "pages/UpdateMovieScreen/UpdateMovieScreen";
+import EditMovieScreen from "pages/UpdateMovieScreen/EditMovieScreen";
 
 export type RootStackParamList = {
   [SCREENS.HOME_SCREEN]: {movieId:string};
@@ -32,7 +32,7 @@ const Router: React.FC = () => {
         />
         <Stack.Screen
           name={SCREENS.UPDATE_MOVIE_SCREEN}
-          component={UpdateMovieScreen}
+          component={EditMovieScreen}
         />
         <Stack.Screen
           name={SCREENS.MOVIE_DETAILS_SCREEN}
