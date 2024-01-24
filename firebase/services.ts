@@ -1,13 +1,16 @@
 import { app } from "firebase/config";
 import {
-  Firestore,
   addDoc,
+  arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
-  getDocs,
+  getDocsFromServer,
   getFirestore,
+  increment,
   query,
+  updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
@@ -16,20 +19,7 @@ import {
   MovieType,
   UpdateMovieType,
 } from "static/types";
-
-export const saveData = async (data: any) => {
-  const db = getFirestore(app);
-  try {
-    const docRef = await addDoc(collection(db, "users"), {
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815,
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-};
+const db = getFirestore(app);
 
 export const uploadImage = async (imageUri: string) => {
   try {
@@ -55,7 +45,6 @@ export const createMovie = async (movieData: CreateMovieType) => {
     comments: [],
   };
 
-  const db = getFirestore(app);
   try {
     const docRef = await addDoc(collection(db, "movies"), movie);
     return docRef.id;
@@ -65,16 +54,52 @@ export const createMovie = async (movieData: CreateMovieType) => {
 };
 
 export const editMovie = async (movieData: UpdateMovieType) => {
-  return movieData.movieId;
+  try {
+    const movieRef = doc(db, "movies", movieData.movieId as string);
+
+    await updateDoc(movieRef, { ...movieData });
+
+    return movieData.movieId;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+export const addComment = async (movieId: string, comment: CommentType) => {
+  try {
+    const movieRef = doc(db, "movies", movieId);
+
+    await updateDoc(movieRef, {
+      comments: arrayUnion(comment),
+      rating: increment(comment.rating as number),
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const getOneMovie = async (movieId: string) => {
+  const docRef = doc(db, "movies", movieId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
+};
+
+export const deleteMovie = async (movieId: string) => {
+  try {
+    await deleteDoc(doc(db, "movies", movieId));
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 export const getMovies = async () => {
   try {
-    const db = getFirestore(app);
-
     const q = query(collection(db, "movies"));
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocsFromServer(q);
 
     const data = querySnapshot.docs.map((doc) => {
       return { ...doc.data(), movieId: doc.id };
@@ -86,6 +111,5 @@ export const getMovies = async () => {
     return [];
   } finally {
     console.log("Movies fetched!");
-    
   }
 };

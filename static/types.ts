@@ -1,7 +1,7 @@
 export type CommentType = {
-  author: string;
-  comment: string;
-  rating: number;
+  author?: string;
+  comment?: string;
+  rating?: number;
 };
 
 export type MovieType = {
@@ -12,7 +12,7 @@ export type MovieType = {
   description?: string;
   image?: string;
   genre?: string;
-  movieId?:string;
+  movieId?: string;
 };
 
 export interface CreateMovieType {

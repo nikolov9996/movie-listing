@@ -4,9 +4,9 @@ import { Card } from "react-native-paper";
 import { AirbnbRating } from "react-native-ratings";
 import { CommentType } from "static/types";
 
-const Comments: React.FC<{ comments: CommentType[] }> = ({ comments }) => (
+const Comments: React.FC<{ comments?: CommentType[] }> = ({ comments }) => (
   <>
-    {comments.map(({ author, comment, rating }, index) => (
+    {comments?.map(({ author, comment, rating }, index) => (
       <Card style={styles.container} key={index}>
         <View style={styles.title}>
           <Text style={styles.author}>{author}</Text>

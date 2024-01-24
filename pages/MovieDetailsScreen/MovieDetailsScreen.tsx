@@ -1,5 +1,5 @@
 import ScreenLayout from "components/ScreenLayout";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Card, useTheme } from "react-native-paper";
@@ -10,6 +10,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "static/Router";
 import { SCREENS } from "static/screens";
 import Button from "components/Button/Button";
+import useMovieDetailsScreen from "./MovieDetailsScreen.logic";
+import LoadingLayout from "pages/LoadingLayout";
+import { useIsFocused } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -20,32 +23,73 @@ const MovieDetailsScreen: React.FC<Props> = ({
   navigation: { navigate },
   route,
 }) => {
-  const theme = useTheme()
+  const isFocused = useIsFocused();
+
+  const theme = useTheme();
   const { params } = route;
+  const {
+    loading,
+    movie,
+    handleDeleteMovie,
+    deleteLoading,
+    fetchData,
+    refetchData,
+  } = useMovieDetailsScreen({
+    movieId: params.movieId,
+  });
+
+  useEffect(() => {
+    fetchData();
+  }, [isFocused]);
+
+  const deleteCurrentMovie = async () => {
+    const deleted = await handleDeleteMovie(params.movieId);
+    if (deleted) {
+      return navigate({
+        key: SCREENS.HOME_SCREEN,
+        params: { movieId: params.movieId },
+        name: SCREENS.HOME_SCREEN,
+      });
+    }
+  };
+
+  const rating: number = Number(
+    (
+      movie?.comments &&
+      movie.rating &&
+      movie?.rating / movie?.comments.length
+    )?.toFixed(0)
+  );
+
+  if (loading) {
+    return <LoadingLayout />;
+  }
+
   return (
     <ScreenLayout>
       <ScrollView>
         <View>
           <View style={styles.titleBox}>
-            <Text style={styles.mainTitle}>title here</Text>
+            <Text style={styles.mainTitle}>{movie?.title}</Text>
           </View>
           <Card.Content>
             <Card.Cover
+              style={{ height: 350 }}
               source={{
-                uri: "https://fastly.picsum.photos/id/1015/200/300.jpg?hmac=Rx9zhHRx_cf574gBuoMH5d7HlhZitGMA81AgPmhJDSI",
+                uri: movie?.image,
               }}
             />
-            <Text>some text</Text>
+            <Text style={styles.description}>{movie?.description}</Text>
           </Card.Content>
           <View style={styles.ratingBox}>
             <AirbnbRating
               count={5}
               size={30}
-              defaultRating={2}
+              defaultRating={+rating || 0}
               isDisabled={true}
-              showRating={false} // ={3} // value here
+              showRating={false}
             />
-            <Text style={styles.ratingValue}>{`(${2}/5)`}</Text>
+            <Text style={styles.ratingValue}>{`(${rating}/5)`}</Text>
           </View>
           <Button
             onPress={() =>
@@ -61,14 +105,9 @@ const MovieDetailsScreen: React.FC<Props> = ({
             label="Edit Movie"
             icon="file-document-edit-outline"
           />
-           <Button
-            // onPress={() =>
-            //   navigate({
-            //     key: SCREENS.UPDATE_MOVIE_SCREEN,
-            //     params: { movieId: params.movieId },
-            //     name: SCREENS.UPDATE_MOVIE_SCREEN,
-            //   })
-            // }
+          <Button
+            onPress={deleteCurrentMovie}
+            loading={deleteLoading}
             style={styles.deleteButton}
             mode="contained"
             buttonColor={theme.colors.error}
@@ -77,12 +116,8 @@ const MovieDetailsScreen: React.FC<Props> = ({
             icon="file-document-edit-outline"
           />
         </View>
-        <Comments
-          comments={[
-            { author: "author", comment: "some comment here", rating: 3 },
-          ]}
-        />
-        <AddComment />
+        <Comments comments={movie?.comments} />
+        <AddComment refetchData={refetchData} movieId={params.movieId} />
       </ScrollView>
     </ScreenLayout>
   );
@@ -100,6 +135,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
+  description: {
+    paddingHorizontal: 3,
+    paddingVertical: 10,
+  },
   ratingBox: {
     display: "flex",
     flexDirection: "row",
@@ -113,12 +152,12 @@ const styles = StyleSheet.create({
     color: "#f1c40f",
   },
   editButton: {
-    marginHorizontal:20,
+    marginHorizontal: 20,
     marginTop: 20,
   },
-  deleteButton:{
-    marginHorizontal:20,
-    marginTop:10,
-    marginBottom:20
-  }
+  deleteButton: {
+    marginHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 20,
+  },
 });

@@ -5,12 +5,11 @@ import { MovieType } from "static/types";
 const useHomeScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [movies, setMovies] = useState<MovieType[]>([]);
-  
+
   async function fetchData() {
     try {
       setLoading(true);
       const response = await getMovies();
-      console.log(response);
       setMovies(response);
     } catch (error) {
       console.log("====================================");
@@ -24,10 +23,11 @@ const useHomeScreen = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   return {
     loading: loading ?? movies.length,
     movies,
+    fetchData,
   };
 };
 

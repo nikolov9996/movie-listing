@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "components/Button/Button";
 import MovieCard from "components/MovieCard/MovieCard";
 import ScreenLayout from "components/ScreenLayout";
@@ -10,20 +10,26 @@ import { RootStackParamList } from "static/Router";
 import useHomeScreen from "./HomeScreen.logic";
 import LoadingLayout from "pages/LoadingLayout";
 import { MovieType } from "static/types";
+import { useIsFocused } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, SCREENS.HOME_SCREEN>;
 
 const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { loading, movies } = useHomeScreen();
+  const { loading, movies, fetchData } = useHomeScreen();
   const [refreshing, setRefreshing] = React.useState(false);
+  const isFocused = useIsFocused();
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
+    fetchData().then(() => {
       setRefreshing(false);
-    }, 2000);
+    });
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [isFocused]);
 
   const renderItem = (item: MovieType) => {
     return (
@@ -66,6 +72,7 @@ const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
       ) : (
         <View style={{ flex: 1 }}>
           <FlatList
+            style={{ flex: 1 }}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }

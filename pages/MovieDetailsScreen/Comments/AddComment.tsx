@@ -4,13 +4,21 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import { StyleSheet, Text, View } from "react-native";
 import { Card, TextInput } from "react-native-paper";
 import { AirbnbRating } from "react-native-ratings";
+import { CommentType } from "static/types";
+import useAddComment from "./AddComment.logic";
 
 interface FormState extends FieldValues {
-  author: string;
-  comment: string;
-  rating: number;
+  author?: string;
+  comment?: string;
+  rating?: number;
 }
-const AddComment: React.FC = () => {
+
+type Props = {
+  movieId: string;
+  refetchData: () => {};
+};
+const AddComment: React.FC<Props> = ({ refetchData, movieId }) => {
+  const { loading, handleAddComment } = useAddComment();
   const {
     handleSubmit,
     control,
@@ -18,13 +26,16 @@ const AddComment: React.FC = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: FormState | any) => {
-    console.log(data);
-    reset({
-      author: "",
-      comment: "",
-      rating: 0,
-    });
+  const onSubmit = async (data: FormState) => {
+    const added = await handleAddComment(movieId, data);
+    if (added) {
+      await refetchData();
+      reset({
+        author: "",
+        comment: "",
+        rating: 0,
+      });
+    }
   };
 
   return (
@@ -67,7 +78,7 @@ const AddComment: React.FC = () => {
           rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
             <AirbnbRating
-              defaultRating={value}
+              defaultRating={value || 0}
               showRating={false}
               onFinishRating={onChange}
             />
@@ -76,6 +87,7 @@ const AddComment: React.FC = () => {
         />
       </View>
       <Button
+        loading={loading}
         children
         compact
         mode="contained"

@@ -6,9 +6,11 @@ import HomeScreen from "pages/HomeScreen/HomeScreen";
 import AddMovieScreen from "pages/AddMovieScreen/AddMovieScreen";
 import MovieDetailsScreen from "pages/MovieDetailsScreen/MovieDetailsScreen";
 import EditMovieScreen from "pages/UpdateMovieScreen/EditMovieScreen";
+import { Icon } from "react-native-paper";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export type RootStackParamList = {
-  [SCREENS.HOME_SCREEN]: {movieId:string};
+  [SCREENS.HOME_SCREEN]: { movieId: string };
   [SCREENS.ADD_MOVIE_SCREEN]: undefined;
   [SCREENS.MOVIE_DETAILS_SCREEN]: { movieId: string };
   [SCREENS.UPDATE_MOVIE_SCREEN]: { movieId: string };
@@ -24,21 +26,27 @@ const Router: React.FC = () => {
           options={{ headerShown: false }}
           name={SCREENS.HOME_SCREEN}
           component={HomeScreen}
-          
         />
         <Stack.Screen
           name={SCREENS.ADD_MOVIE_SCREEN}
           component={AddMovieScreen}
+          options={{
+            headerTitle: "Add Movie",
+          }}
         />
         <Stack.Screen
           name={SCREENS.UPDATE_MOVIE_SCREEN}
+          options={{
+            headerTitle: "Edit Movie",
+          }}
           component={EditMovieScreen}
         />
         <Stack.Screen
           name={SCREENS.MOVIE_DETAILS_SCREEN}
           component={MovieDetailsScreen}
-          options={{ headerTitle: "Details" }}
-          // initialParams={{movieId:'some id'}}
+          options={{
+            headerTitle: "Movie Details",
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
