@@ -15,8 +15,8 @@ import { useIsFocused } from "@react-navigation/native";
 type Props = NativeStackScreenProps<RootStackParamList, SCREENS.HOME_SCREEN>;
 
 const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const { loading, movies, fetchData } = useHomeScreen();
+  const { loading, movies, searchQuery, fetchData, setSearchQuery } =
+    useHomeScreen();
   const [refreshing, setRefreshing] = React.useState(false);
   const isFocused = useIsFocused();
 

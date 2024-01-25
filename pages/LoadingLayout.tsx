@@ -1,15 +1,12 @@
 import React from "react";
-import { Text } from "react-native";
+import { View } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 
 const LoadingLayout: React.FC = () => {
   return (
-    <>
-      <Text>Loading...</Text>
-      <Text>Loading...</Text>
-      <Text>Loading...</Text>
-      <Text>Loading...</Text>
-      <Text>Loading...</Text>
-    </>
+    <View style={{ flex: 1, justifyContent: "center" }}>
+      <ActivityIndicator size={120} />
+    </View>
   );
 };
 

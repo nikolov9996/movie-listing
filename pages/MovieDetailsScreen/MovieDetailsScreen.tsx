@@ -2,7 +2,7 @@ import ScreenLayout from "components/ScreenLayout";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { Card, useTheme } from "react-native-paper";
+import { Card, Divider, useTheme } from "react-native-paper";
 import { AirbnbRating } from "react-native-ratings";
 import Comments from "./Comments/Comments";
 import AddComment from "./Comments/AddComment";
@@ -80,6 +80,18 @@ const MovieDetailsScreen: React.FC<Props> = ({
               }}
             />
             <Text style={styles.description}>{movie?.description}</Text>
+            <Divider />
+            <Text style={styles.description}>
+              <Text style={styles.boldText}>Added By: </Text>
+              {movie?.creator}
+            </Text>
+            <Divider />
+
+            <Text style={styles.description}>
+              <Text style={styles.boldText}>Genre: </Text>
+              {movie?.description}
+            </Text>
+            <Divider style={{marginBottom:8}}/>
           </Card.Content>
           <View style={styles.ratingBox}>
             <AirbnbRating
@@ -137,7 +149,7 @@ const styles = StyleSheet.create({
   },
   description: {
     paddingHorizontal: 3,
-    paddingVertical: 10,
+    paddingTop: 10,
   },
   ratingBox: {
     display: "flex",
@@ -159,5 +171,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
+  },
+  boldText: {
+    fontWeight: "700",
   },
 });
