@@ -13,7 +13,7 @@ import Button from "components/Button/Button";
 import useMovieDetailsScreen from "./MovieDetailsScreen.logic";
 import LoadingLayout from "pages/LoadingLayout";
 import { useIsFocused } from "@react-navigation/native";
-
+import { storeSuggestions } from "hooks/storage";
 type Props = NativeStackScreenProps<
   RootStackParamList,
   SCREENS.MOVIE_DETAILS_SCREEN
@@ -41,6 +41,12 @@ const MovieDetailsScreen: React.FC<Props> = ({
   useEffect(() => {
     fetchData();
   }, [isFocused]);
+
+  useEffect(() => {
+    if (movie?.genre) {
+      storeSuggestions(movie?.genre);
+    }
+  }, [movie]);
 
   const deleteCurrentMovie = async () => {
     const deleted = await handleDeleteMovie(params.movieId);
@@ -89,9 +95,9 @@ const MovieDetailsScreen: React.FC<Props> = ({
 
             <Text style={styles.description}>
               <Text style={styles.boldText}>Genre: </Text>
-              {movie?.description}
+              {movie?.genre}
             </Text>
-            <Divider style={{marginBottom:8}}/>
+            <Divider style={{ marginBottom: 8 }} />
           </Card.Content>
           <View style={styles.ratingBox}>
             <AirbnbRating

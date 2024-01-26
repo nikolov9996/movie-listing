@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Button from "components/Button/Button";
-import { createMovie, saveData, uploadImage } from "firebase/services";
+import { createMovie, uploadImage } from "firebase/services";
 import { useDimensions } from "hooks/ui";
 import React, { useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import { TextInput } from "react-native-paper";
 import { RootStackParamList } from "static/Router";
 import { SCREENS } from "static/screens";
 import * as ImagePicker from "expo-image-picker";
+import Picker from "components/Picker/Picker";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -73,6 +74,10 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
     },
     input: {
       marginVertical: 5,
+    },
+    picker: {
+      borderColor: "#000000",
+      borderWidth: 1,
     },
   });
 
@@ -162,16 +167,12 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
         <Controller
           defaultValue={"some Genre"}
           control={control}
-          rules={{ required: true, minLength: 4 }}
+          rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              mode="outlined"
-              label="Genre (min 4)"
+            <Picker
               error={!!errors["genre"]}
+              onValueChange={onChange}
+              value={value}
             />
           )}
           name="genre"

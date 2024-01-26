@@ -13,6 +13,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getSuggestion } from "hooks/storage";
 import {
   CommentType,
   CreateMovieType,
@@ -101,10 +102,22 @@ export const getMovies = async () => {
 
     const querySnapshot = await getDocsFromServer(q);
 
-    const data = querySnapshot.docs.map((doc) => {
+    const data: MovieType[] = querySnapshot.docs.map((doc) => {
       return { ...doc.data(), movieId: doc.id };
     });
 
+    const suggestionsKey = await getSuggestion();
+    console.log(suggestionsKey);
+    if (suggestionsKey) {
+      data.sort((a) => {
+        const valueA = a.genre === suggestionsKey;
+        // const valueB = b.genre === suggestionsKey;
+
+        if (valueA) {
+          return -1;
+        } else return 1;
+      });
+    }
     return data;
   } catch (error) {
     console.log(error);

@@ -12,6 +12,7 @@ import { TextInput } from "react-native-paper";
 import Button from "components/Button/Button";
 import useEditMovieScreen from "./EditMovieScreen.logic";
 import LoadingLayout from "pages/LoadingLayout";
+import Picker from "components/Picker/Picker";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -169,16 +170,11 @@ const EditMovieScreen: React.FC<Props> = ({
         />
         <Controller
           control={control}
-          rules={{ required: true, minLength: 4 }}
+          rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              defaultValue={movie?.genre}
-              style={styles.input}
+            <Picker
+              onValueChange={onChange}
               value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              mode="outlined"
-              label="Genre (min 4)"
               error={!!errors["genre"]}
             />
           )}
