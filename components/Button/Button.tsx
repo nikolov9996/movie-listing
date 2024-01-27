@@ -9,8 +9,13 @@ interface Props extends ButtonProps {
 
 const Button: React.FC<Props> = ({ label, onPress, ...rest }) => {
   return (
-    <TouchableOpacity activeOpacity={0.8}>
-      <ButtonBase labelStyle={{ fontSize: 16 }} onPress={onPress} {...rest}>
+    <TouchableOpacity  activeOpacity={0.8}>
+      <ButtonBase
+        labelStyle={{ fontSize: 16 }}
+        testID="button:custom"
+        onPress={onPress}
+        {...rest}
+      >
         {label}
       </ButtonBase>
     </TouchableOpacity>

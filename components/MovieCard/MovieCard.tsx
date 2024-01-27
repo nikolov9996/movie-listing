@@ -39,6 +39,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ onPress, movie }) => {
 
   return (
     <TouchableOpacity
+      testID="movieCard"
       onPress={onPress}
       style={styles.container}
       activeOpacity={0.8}

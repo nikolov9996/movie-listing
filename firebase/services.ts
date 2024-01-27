@@ -1,5 +1,6 @@
 import { app } from "firebase/config";
 import {
+  CACHE_SIZE_UNLIMITED,
   addDoc,
   arrayUnion,
   collection,
@@ -9,6 +10,8 @@ import {
   getDocsFromServer,
   getFirestore,
   increment,
+  initializeFirestore,
+  memoryLocalCache,
   query,
   updateDoc,
 } from "firebase/firestore";
@@ -20,7 +23,11 @@ import {
   MovieType,
   UpdateMovieType,
 } from "static/types";
-const db = getFirestore(app);
+
+const db = initializeFirestore(app, {
+  localCache: memoryLocalCache(),
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+});
 
 export const uploadImage = async (imageUri: string) => {
   try {
