@@ -26,7 +26,6 @@ import {
 
 const db = initializeFirestore(app, {
   localCache: memoryLocalCache(),
-  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
 });
 
 export const uploadImage = async (imageUri: string) => {
