@@ -1,13 +1,12 @@
 import { app } from "firebase/config";
 import {
-  CACHE_SIZE_UNLIMITED,
   addDoc,
   arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
-  getDocsFromServer,
+  getDocs,
   getFirestore,
   increment,
   initializeFirestore,
@@ -24,9 +23,7 @@ import {
   UpdateMovieType,
 } from "static/types";
 
-const db = initializeFirestore(app, {
-  localCache: memoryLocalCache(),
-});
+const db = getFirestore(app);
 
 export const uploadImage = async (imageUri: string) => {
   try {
@@ -106,7 +103,7 @@ export const getMovies = async () => {
   try {
     const q = query(collection(db, "movies"));
 
-    const querySnapshot = await getDocsFromServer(q);
+    const querySnapshot = await getDocs(q);
 
     const data: MovieType[] = querySnapshot.docs.map((doc) => {
       return { ...doc.data(), movieId: doc.id };
