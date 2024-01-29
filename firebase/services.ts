@@ -97,7 +97,7 @@ export const getOneMovie = async (movieId: string) => {
 export const deleteMovie = async (movieId: string) => {
   try {
     await deleteDoc(doc(db, "movies", movieId));
-    syncCacheOnDelete(movieId);
+    await syncCacheOnDelete(movieId);
     return true;
   } catch (error) {
     return false;

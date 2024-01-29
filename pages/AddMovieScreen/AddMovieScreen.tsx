@@ -9,8 +9,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
-  Text,
-  View,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { TextInput } from "react-native-paper";
@@ -24,7 +22,7 @@ type Props = NativeStackScreenProps<
   SCREENS.ADD_MOVIE_SCREEN
 >;
 
-interface FormState extends FieldValues {
+export interface FormState extends FieldValues {
   creator?: string;
   title?: string;
   description?: string;
@@ -40,7 +38,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
   const {
     handleSubmit,
     control,
-    reset,
+    watch,
     formState: { errors },
     setValue,
   } = useForm();
@@ -104,17 +102,10 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
       console.log(error);
     } finally {
       setLoading(false);
-      reset({
-        creator: "",
-        title: "",
-        description: "",
-        image: "",
-        genre: "",
-      });
       setImage(undefined);
     }
   };
-
+  console.log(watch("genre"));
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container}>
@@ -165,14 +156,14 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           name="description"
         />
         <Controller
-          defaultValue={null}
+          defaultValue={"Action"}
           control={control}
           rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
+          render={({ field: { value } }) => (
             <Picker
               error={!!errors["genre"]}
-              onValueChange={onChange}
-              value={value}
+              onValueChange={setValue}
+              selectedValue={value}
             />
           )}
           name="genre"

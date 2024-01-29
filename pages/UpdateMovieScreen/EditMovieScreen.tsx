@@ -13,6 +13,7 @@ import Button from "components/Button/Button";
 import useEditMovieScreen from "./EditMovieScreen.logic";
 import LoadingLayout from "pages/LoadingLayout";
 import Picker from "components/Picker/Picker";
+import { syncCacheOnDelete } from "hooks/storage";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -62,7 +63,6 @@ const EditMovieScreen: React.FC<Props> = ({
     setValue("description", movie?.description, {
       shouldValidate: true,
     });
-    console.log(getValues());
   }, [params.movieId, loading]);
 
   const handleImagePicker = async () => {
@@ -98,8 +98,11 @@ const EditMovieScreen: React.FC<Props> = ({
   });
 
   const onSubmit = async (data: FormState) => {
+    // removing old record so it will be re-saved in cache with the updates
+    await syncCacheOnDelete(params.movieId);
     if (data.image && image) {
       const firebaseUrl = await uploadImage(data.image);
+      data.image = firebaseUrl;
       setValue("image", firebaseUrl, { shouldValidate: true });
     }
 
@@ -107,7 +110,7 @@ const EditMovieScreen: React.FC<Props> = ({
       ...data,
       movieId: params.movieId,
     });
-    console.log(movieId);
+
     if (movieId) {
       navigate({
         key: SCREENS.MOVIE_DETAILS_SCREEN,
@@ -171,10 +174,10 @@ const EditMovieScreen: React.FC<Props> = ({
         <Controller
           control={control}
           rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
+          render={({ field: { value } }) => (
             <Picker
-              onValueChange={onChange}
-              value={value}
+              onValueChange={setValue}
+              selectedValue={value}
               error={!!errors["genre"]}
             />
           )}

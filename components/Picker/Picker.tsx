@@ -1,19 +1,19 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useTheme } from "react-native-paper";
-import RNPickerSelect, {
-  Item,
-  PickerSelectProps,
-} from "react-native-picker-select";
-import { MovieGenre } from "static/enums";
 
-interface Props extends Omit<PickerSelectProps, "items"> {
+import { MovieGenre } from "static/enums";
+import { Picker as ExpoPicker, PickerProps } from "@react-native-picker/picker";
+import { ItemValue } from "@react-native-picker/picker/typings/Picker";
+interface Props extends Omit<PickerProps, "onValueChange"> {
   error?: boolean;
+  onValueChange: any;
+  selectedValue: string;
 }
 
 const items = Object.values(MovieGenre);
 
-const Picker: React.FC<Props> = ({ value, onValueChange, error }) => {
+const Picker: React.FC<Props> = ({ selectedValue, onValueChange, error }) => {
   const theme = useTheme();
   return (
     <View
@@ -23,31 +23,21 @@ const Picker: React.FC<Props> = ({ value, onValueChange, error }) => {
         borderWidth: error ? 2 : 1,
       }}
     >
-      <RNPickerSelect
-        placeholder={{
-          label: "Select Genre",
-          value: null,
-          key: "keykey22",
-        }}
-        value={value}
-        style={{
-          iconContainer: {
-            top: 20,
-            right: 10,
-          },
-          placeholder: {
-            color: "black",
-            fontSize: 12,
-            fontWeight: "bold",
-          },
-        }}
-        onValueChange={onValueChange}
-        items={items.map((item) => ({
-          label: item,
-          value: item,
-          key: item,
-        }))}
-      />
+      <ExpoPicker
+        selectedValue={selectedValue}
+        onValueChange={(itemValue: string) => onValueChange("genre", itemValue)}
+        selectionColor={"#000000"}
+      >
+        {items.map((item) => (
+          <ExpoPicker.Item
+            enabled={true}
+            color={error ? theme.colors.error : undefined}
+            value={item}
+            key={item}
+            label={item}
+          />
+        ))}
+      </ExpoPicker>
     </View>
   );
 };
@@ -55,9 +45,6 @@ const Picker: React.FC<Props> = ({ value, onValueChange, error }) => {
 const styles = StyleSheet.create({
   picker: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "stretch",
     borderRadius: 10,
     backgroundColor: "#ffffff",
   },
