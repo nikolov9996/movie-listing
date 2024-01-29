@@ -15,7 +15,7 @@ import { useIsFocused } from "@react-navigation/native";
 type Props = NativeStackScreenProps<RootStackParamList, SCREENS.HOME_SCREEN>;
 
 const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
-  const { loading, movies, searchQuery, fetchData, setSearchQuery } =
+  const { loading, movies, searchQuery, isOnline, fetchData, setSearchQuery } =
     useHomeScreen();
   const [refreshing, setRefreshing] = React.useState(false);
   const isFocused = useIsFocused();
@@ -31,17 +31,21 @@ const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
     fetchData();
   }, [isFocused]);
 
+  const onPressMovie = (movieId: string) => {
+    if (isOnline) {
+      navigate({
+        key: SCREENS.MOVIE_DETAILS_SCREEN,
+        params: { movieId: movieId as string },
+        name: SCREENS.MOVIE_DETAILS_SCREEN,
+      });
+    }
+  };
+
   const renderItem = (item: MovieType) => {
     return (
       <MovieCard
         movie={item}
-        onPress={() => {
-          navigate({
-            key: SCREENS.MOVIE_DETAILS_SCREEN,
-            params: { movieId: item.movieId as string },
-            name: SCREENS.MOVIE_DETAILS_SCREEN,
-          });
-        }}
+        onPress={() => onPressMovie(item.movieId as string)}
       />
     );
   };
@@ -60,12 +64,13 @@ const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
         mode="contained"
         label="Add Movie"
         children
-        onPress={() =>
+        disabled={!isOnline}
+        onPress={() => {
           navigate({
             key: SCREENS.ADD_MOVIE_SCREEN,
             name: SCREENS.ADD_MOVIE_SCREEN,
-          })
-        }
+          });
+        }}
       />
       {loading ? (
         <LoadingLayout />

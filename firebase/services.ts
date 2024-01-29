@@ -9,13 +9,17 @@ import {
   getDocs,
   getFirestore,
   increment,
-  initializeFirestore,
-  memoryLocalCache,
   query,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { getSuggestion } from "hooks/storage";
+import {
+  getMoviesFromCache,
+  getSuggestion,
+  saveMoviesToStorage,
+  syncCacheOnDelete,
+} from "hooks/storage";
+import { getNetworkStatus, sortMovies } from "hooks/utils";
 import {
   CommentType,
   CreateMovieType,
@@ -93,14 +97,25 @@ export const getOneMovie = async (movieId: string) => {
 export const deleteMovie = async (movieId: string) => {
   try {
     await deleteDoc(doc(db, "movies", movieId));
+    syncCacheOnDelete(movieId);
     return true;
   } catch (error) {
     return false;
   }
 };
 
-export const getMovies = async () => {
+export async function getMovies() {
   try {
+    const isOnline = await getNetworkStatus();
+    const suggestionsKey = await getSuggestion();
+
+    if (!isOnline) {
+      const moviesOffline: MovieType[] = await getMoviesFromCache();
+      return suggestionsKey
+        ? sortMovies(moviesOffline, suggestionsKey)
+        : moviesOffline;
+    }
+
     const q = query(collection(db, "movies"));
 
     const querySnapshot = await getDocs(q);
@@ -109,23 +124,17 @@ export const getMovies = async () => {
       return { ...doc.data(), movieId: doc.id };
     });
 
-    const suggestionsKey = await getSuggestion();
-    console.log(suggestionsKey);
-    if (suggestionsKey) {
-      data.sort((a) => {
-        const valueA = a.genre === suggestionsKey;
-        // const valueB = b.genre === suggestionsKey;
+    const moviesFromCache: MovieType[] = await saveMoviesToStorage(data);
 
-        if (valueA) {
-          return -1;
-        } else return 1;
-      });
-    }
-    return data;
+    /* Always returns movies from cache! and check for movies from cache this means the data for image fetching will be saved and the app will run way faster */
+
+    return suggestionsKey
+      ? sortMovies(moviesFromCache, suggestionsKey)
+      : moviesFromCache;
   } catch (error) {
     console.log(error);
     return [];
   } finally {
     console.log("Movies fetched!");
   }
-};
+}
