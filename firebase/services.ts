@@ -110,7 +110,7 @@ export async function getMovies() {
     const isOnline = await getNetworkStatus();
     const suggestionsKey = await getSuggestion();
 
-    if (isOnline) {
+    if (!isOnline) {
       const moviesOffline: MovieType[] = await getMoviesFromCache();
       return suggestionsKey
         ? sortMovies(moviesOffline, suggestionsKey)
