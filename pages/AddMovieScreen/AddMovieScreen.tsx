@@ -165,7 +165,7 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           name="description"
         />
         <Controller
-          defaultValue={"some Genre"}
+          defaultValue={null}
           control={control}
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
