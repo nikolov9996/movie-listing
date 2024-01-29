@@ -6,6 +6,7 @@ import { MovieType } from "static/types";
 export enum StorageKeys {
   SUGGESTIONS = "last-visited",
   ALL_MOVIES = "all-movies",
+  ONLINE = "online",
 }
 
 export const storeSuggestions = async (value: any) => {

@@ -1,4 +1,5 @@
 import { getMovies } from "firebase/services";
+import { getNetworkStatus } from "hooks/utils";
 import React, { useEffect, useState } from "react";
 import { MovieType } from "static/types";
 
@@ -8,6 +9,7 @@ const useHomeScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [movies, setMovies] = useState<MovieType[]>([]);
   const [apiData, setApiData] = useState<MovieType[]>([]);
+  const [isOnline, setIsOnline] = useState<boolean | undefined>(true);
 
   async function fetchData() {
     try {
@@ -32,6 +34,9 @@ const useHomeScreen = () => {
   };
 
   useEffect(() => {
+    getNetworkStatus().then((is) => {
+      setIsOnline(is);
+    });
     fetchData();
   }, []);
 
@@ -47,6 +52,7 @@ const useHomeScreen = () => {
     loading: loading ?? movies.length,
     movies,
     searchQuery,
+    isOnline,
     setSearchQuery,
     fetchData,
     search,
