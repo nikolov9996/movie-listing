@@ -1,7 +1,11 @@
+import { useNavigation } from "@react-navigation/native";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "firebase/services";
 import { getNetworkStatus } from "hooks/utils";
 import React, { ReactNode, useEffect, useState } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 import { Icon, Text, useTheme } from "react-native-paper";
+import { SCREENS } from "static/screens";
 
 interface ScreenLayoutProps {
   children: ReactNode;
@@ -10,10 +14,21 @@ interface ScreenLayoutProps {
 const ScreenLayout: React.FC<ScreenLayoutProps> = ({ children }) => {
   const theme = useTheme();
   const [isOnline, setIsOnline] = useState<boolean | undefined>(true);
+  const { navigate } = useNavigation();
 
   useEffect(() => {
     getNetworkStatus().then((is) => {
       setIsOnline(is);
+    });
+  }, []);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("current user: ", user.email, user.uid);
+      } else {
+        navigate(SCREENS.LOGIN_SCREEN as never);
+      }
     });
   }, []);
 

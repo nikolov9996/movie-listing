@@ -1,5 +1,6 @@
 import { app } from "firebase/config";
 import {
+  DocumentData,
   addDoc,
   arrayUnion,
   collection,
@@ -26,8 +27,27 @@ import {
   MovieType,
   UpdateMovieType,
 } from "static/types";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  initializeAuth,
+  getReactNativePersistence,
+  signOut,
+  AuthError,
+} from "firebase/auth";
 
 const db = getFirestore(app);
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
+
+type LoginType = {
+  email: string;
+  password: string;
+};
+
+type RegisterType = LoginType;
 
 export const uploadImage = async (imageUri: string) => {
   try {
@@ -47,10 +67,15 @@ export const uploadImage = async (imageUri: string) => {
 };
 
 export const createMovie = async (movieData: CreateMovieType) => {
+  const lastChange = new Date().getTime();
+  const creatorId = getCurrentUser()?.uid;
+
   const movie: MovieType = {
     ...movieData,
     rating: 0,
+    lastChange,
     comments: [],
+    creatorId,
   };
 
   try {
@@ -63,9 +88,10 @@ export const createMovie = async (movieData: CreateMovieType) => {
 
 export const editMovie = async (movieData: UpdateMovieType) => {
   try {
+    const lastChange = new Date().getTime();
     const movieRef = doc(db, "movies", movieData.movieId as string);
 
-    await updateDoc(movieRef, { ...movieData });
+    await updateDoc(movieRef, { ...movieData, lastChange });
 
     return movieData.movieId;
   } catch (error) {
@@ -127,7 +153,6 @@ export async function getMovies() {
     const moviesFromCache: MovieType[] = await saveMoviesToStorage(data);
 
     /* Always returns movies from cache! and check for movies from cache this means the data for image fetching will be saved and the app will run way faster */
-
     return suggestionsKey
       ? sortMovies(moviesFromCache, suggestionsKey)
       : moviesFromCache;
@@ -138,3 +163,38 @@ export async function getMovies() {
     console.log("Movies fetched!");
   }
 }
+
+export const checkAuth = async (): Promise<boolean> => {
+  await auth.authStateReady();
+  return !!auth.currentUser;
+};
+
+export function getCurrentUser() {
+  return auth.currentUser;
+}
+
+export const loginUser = async ({
+  email,
+  password,
+}: LoginType): Promise<any | Error> => {
+  try {
+    return await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    return error;
+  }
+};
+
+export const registerUser = async ({
+  email,
+  password,
+}: RegisterType): Promise<any | Error> => {
+  try {
+    return await createUserWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    return error;
+  }
+};
+
+export const logout = async (): Promise<void> => {
+  return await signOut(auth);
+};

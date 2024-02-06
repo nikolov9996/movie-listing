@@ -71,26 +71,38 @@ export const syncCacheOnDelete = async (movieId: string) => {
 export const saveMoviesToStorage = async (
   movies: MovieType[]
 ): Promise<MovieType[]> => {
+  async function saveMovieImageToMemory(movie: MovieType): Promise<MovieType> {
+    const memoryUri: string | undefined = await saveImageToMemory(
+      movie.image,
+      movie.movieId
+    );
+    const updatedMovie: MovieType = {
+      ...movie,
+      image: memoryUri,
+    };
+
+    await saveMovieInCache(updatedMovie);
+    return updatedMovie;
+  }
+
   const promises = movies.map(async (movie) => {
     return new Promise(async function (resolve, reject) {
       try {
         // 1st check if the movie is already in cache
         const cacheMovie = await checkIfMovieInCache(movie.movieId as string);
         if (cacheMovie) {
-          resolve(cacheMovie);
-          return;
+          if (cacheMovie.lastChange !== movie?.lastChange) {
+            const updatedMovie = await saveMovieImageToMemory(movie);
+            resolve(updatedMovie);
+            return;
+          } else {
+            resolve(cacheMovie);
+            return;
+          }
+          // check timestamp of movie here and update in cache
         }
         // if not save it and resolve the promise
-        const memoryUri: string | undefined = await saveImageToMemory(
-          movie.image,
-          movie.movieId
-        );
-        const updatedMovie: MovieType = {
-          ...movie,
-          image: memoryUri,
-        };
-
-        await saveMovieInCache(updatedMovie);
+        const updatedMovie = await saveMovieImageToMemory(movie);
         resolve(updatedMovie);
       } catch (error) {
         reject("Error saving movie to storage & cache");

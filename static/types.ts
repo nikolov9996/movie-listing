@@ -5,6 +5,7 @@ export type CommentType = {
 };
 
 export type MovieType = {
+  creatorId?: string;
   creator?: string;
   title?: string;
   rating?: number;
@@ -13,6 +14,7 @@ export type MovieType = {
   image?: string;
   genre?: string;
   movieId?: string;
+  lastChange?: number;
 };
 
 export interface CreateMovieType {

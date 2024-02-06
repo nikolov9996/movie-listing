@@ -6,10 +6,15 @@ import HomeScreen from "pages/HomeScreen/HomeScreen";
 import AddMovieScreen from "pages/AddMovieScreen/AddMovieScreen";
 import MovieDetailsScreen from "pages/MovieDetailsScreen/MovieDetailsScreen";
 import EditMovieScreen from "pages/UpdateMovieScreen/EditMovieScreen";
-import { Icon } from "react-native-paper";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import LandingScreen from "pages/LandingScreen/LandingScreen";
+import LoginScreen from "pages/LoginScreen/LoginScreen";
+import RegisterScreen from "pages/RegisterScreen/RegisterScreen";
+import Logout from "components/Logout";
 
 export type RootStackParamList = {
+  [SCREENS.LANDING_SCREEN]: undefined;
+  [SCREENS.LOGIN_SCREEN]: undefined;
+  [SCREENS.REGISTER_SCREEN]: undefined;
   [SCREENS.HOME_SCREEN]: { movieId: string };
   [SCREENS.ADD_MOVIE_SCREEN]: undefined;
   [SCREENS.MOVIE_DETAILS_SCREEN]: { movieId: string };
@@ -21,9 +26,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Router: React.FC = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={SCREENS.HOME_SCREEN}>
+      <Stack.Navigator initialRouteName={SCREENS.LANDING_SCREEN}>
         <Stack.Screen
-          options={{ headerShown: false }}
+          options={{ headerLeft: () => <></>, headerRight: Logout,title:"" }}
           name={SCREENS.HOME_SCREEN}
           component={HomeScreen}
         />
@@ -47,6 +52,21 @@ const Router: React.FC = () => {
           options={{
             headerTitle: "Movie Details",
           }}
+        />
+        <Stack.Screen
+          name={SCREENS.LANDING_SCREEN}
+          component={LandingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={SCREENS.LOGIN_SCREEN}
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={SCREENS.REGISTER_SCREEN}
+          component={RegisterScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

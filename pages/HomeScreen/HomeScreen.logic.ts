@@ -22,7 +22,9 @@ const useHomeScreen = () => {
       console.log(error);
       console.log("====================================");
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 600);
     }
   }
 

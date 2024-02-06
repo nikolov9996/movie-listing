@@ -47,12 +47,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ onPress, movie }) => {
       <Card>
         <Card.Cover
           source={{
-            uri: movie.image,
+            uri: movie?.image,
           }}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.cardTitle}>{movie.title}</Text>
-          <Text style={styles.cardTitle}>{movie.genre}</Text>
+          <Text style={styles.cardTitle}>{movie?.title}</Text>
+          <Text style={styles.cardTitle}>{movie?.genre}</Text>
         </View>
       </Card>
     </TouchableOpacity>

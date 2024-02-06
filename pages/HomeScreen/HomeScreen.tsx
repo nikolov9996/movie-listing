@@ -45,7 +45,7 @@ const HomeScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
     return (
       <MovieCard
         movie={item}
-        onPress={() => onPressMovie(item.movieId as string)}
+        onPress={() => onPressMovie(item?.movieId as string)}
       />
     );
   };
