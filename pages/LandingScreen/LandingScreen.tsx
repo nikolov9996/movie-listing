@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ScreenLayout from "components/ScreenLayout";
 import { checkAuth } from "firebase/services";
@@ -10,8 +11,11 @@ import { SCREENS } from "static/screens";
 type Props = NativeStackScreenProps<RootStackParamList, SCREENS.LANDING_SCREEN>;
 
 const LandingScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
+  const isFocused = useIsFocused();
+  
   useEffect(() => {
     checkAuth().then((logged: boolean) => {
+      console.log(logged)
       if (logged) {
         navigate({
           key: SCREENS.HOME_SCREEN,
@@ -26,7 +30,7 @@ const LandingScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
         });
       }
     });
-  }, []);
+  }, [isFocused]);
 
   return <LoadingLayout />;
 };

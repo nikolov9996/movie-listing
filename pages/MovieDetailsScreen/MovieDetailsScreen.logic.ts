@@ -1,4 +1,4 @@
-import { deleteMovie, getOneMovie } from "firebase/services";
+import { deleteMovie, getCurrentUser, getOneMovie } from "firebase/services";
 import { useEffect, useState } from "react";
 import { MovieType } from "static/types";
 
@@ -10,6 +10,11 @@ const useMovieDetailsScreen = ({ movieId }: Props) => {
   const [movie, setMovie] = useState<MovieType>();
   const [loading, setLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [deleteDialogOpen,setDeleteDialogOpen] = useState<boolean>(false);
+
+  const user = getCurrentUser();
+
+  const isCreator = user?.uid === movie?.creatorId;
 
   async function fetchData() {
     try {
@@ -30,6 +35,7 @@ const useMovieDetailsScreen = ({ movieId }: Props) => {
 
   async function handleDeleteMovie(movieId: string) {
     try {
+      setDeleteDialogOpen(false);
       setDeleteLoading(true);
       const deleted = await deleteMovie(movieId);
       return deleted;
@@ -44,10 +50,17 @@ const useMovieDetailsScreen = ({ movieId }: Props) => {
     fetchData();
   }, [movieId]);
 
+const openDialog = () => setDeleteDialogOpen(true);
+const closeDialog = () => setDeleteDialogOpen(false);
+
   return {
     loading,
     deleteLoading,
     movie,
+    isCreator,
+    deleteDialogOpen,
+    openDialog,
+    closeDialog,
     handleDeleteMovie,
     fetchData,
     refetchData,

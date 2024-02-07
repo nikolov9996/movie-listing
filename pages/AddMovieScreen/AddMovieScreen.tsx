@@ -23,7 +23,6 @@ type Props = NativeStackScreenProps<
 >;
 
 export interface FormState extends FieldValues {
-  creator?: string;
   title?: string;
   description?: string;
   image?: string;
@@ -167,23 +166,6 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
             />
           )}
           name="genre"
-        />
-        <Controller
-          defaultValue={"some Creator name"}
-          control={control}
-          rules={{ required: true, minLength: 4 }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              mode="outlined"
-              label="Creator (min 4)"
-              error={!!errors["creator"]}
-            />
-          )}
-          name="creator"
         />
         <Button
           loading={loading}

@@ -172,7 +172,7 @@ async function saveImageToMemory(imageUrl?: string, movieId?: string) {
   if (!movieId || !imageUrl) return undefined;
   const downloadResumable = FileSystem.createDownloadResumable(
     imageUrl as string,
-    FileSystem.documentDirectory + `/${movieId}`,
+    FileSystem.documentDirectory + `/${imageUrl.slice(-40)}`,
     {}
   );
 

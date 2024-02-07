@@ -2,7 +2,7 @@ import ScreenLayout from "components/ScreenLayout";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { Card, Divider, useTheme } from "react-native-paper";
+import { Card, Dialog, Divider, useTheme } from "react-native-paper";
 import { AirbnbRating } from "react-native-ratings";
 import Comments from "./Comments/Comments";
 import AddComment from "./Comments/AddComment";
@@ -14,6 +14,7 @@ import useMovieDetailsScreen from "./MovieDetailsScreen.logic";
 import LoadingLayout from "pages/LoadingLayout";
 import { useIsFocused } from "@react-navigation/native";
 import { storeSuggestions } from "hooks/storage";
+
 type Props = NativeStackScreenProps<
   RootStackParamList,
   SCREENS.MOVIE_DETAILS_SCREEN
@@ -30,8 +31,12 @@ const MovieDetailsScreen: React.FC<Props> = ({
   const {
     loading,
     movie,
-    handleDeleteMovie,
     deleteLoading,
+    isCreator,
+    deleteDialogOpen,
+    openDialog,
+    closeDialog,
+    handleDeleteMovie,
     fetchData,
     refetchData,
   } = useMovieDetailsScreen({
@@ -110,6 +115,7 @@ const MovieDetailsScreen: React.FC<Props> = ({
             <Text style={styles.ratingValue}>{`(${rating}/5)`}</Text>
           </View>
           <Button
+            disabled={!isCreator}
             onPress={() =>
               navigate({
                 key: SCREENS.UPDATE_MOVIE_SCREEN,
@@ -124,7 +130,8 @@ const MovieDetailsScreen: React.FC<Props> = ({
             icon="file-document-edit-outline"
           />
           <Button
-            onPress={deleteCurrentMovie}
+            disabled={!isCreator}
+            onPress={openDialog}
             loading={deleteLoading}
             style={styles.deleteButton}
             mode="contained"
@@ -136,6 +143,37 @@ const MovieDetailsScreen: React.FC<Props> = ({
         </View>
         <Comments comments={movie?.comments} />
         <AddComment refetchData={refetchData} movieId={params.movieId} />
+        <Dialog style={{ top: -120 }} visible={deleteDialogOpen}>
+          <Dialog.Content>
+            <Text style={styles.dialogContent}>
+              Are you sure you want to Delete{" "}
+            </Text>
+            <Text
+              style={{ ...styles.boldText, fontSize: 20, textAlign: "center" }}
+            >
+              "{movie?.title}"
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
+            <Button
+              mode="contained"
+              buttonColor={theme.colors.error}
+              style={{ width: 100 }}
+              children
+              label="Yes"
+              onPress={deleteCurrentMovie}
+            />
+            <Button
+              mode="contained"
+              style={{ width: 100 }}
+              children
+              label="No"
+              onPress={closeDialog}
+            />
+          </Dialog.Actions>
+        </Dialog>
       </ScrollView>
     </ScreenLayout>
   );
@@ -180,5 +218,10 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "700",
+    lineHeight: 40,
+  },
+  dialogContent: {
+    fontSize: 20,
+    textAlign: "center",
   },
 });

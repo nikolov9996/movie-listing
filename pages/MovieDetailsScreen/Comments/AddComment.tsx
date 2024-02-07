@@ -8,7 +8,6 @@ import { CommentType } from "static/types";
 import useAddComment from "./AddComment.logic";
 
 interface FormState extends FieldValues {
-  author?: string;
   comment?: string;
   rating?: number;
 }
@@ -31,7 +30,6 @@ const AddComment: React.FC<Props> = ({ refetchData, movieId }) => {
     if (added) {
       await refetchData();
       reset({
-        author: "",
         comment: "",
         rating: 0,
       });
@@ -41,22 +39,6 @@ const AddComment: React.FC<Props> = ({ refetchData, movieId }) => {
   return (
     <Card style={styles.container}>
       <Text style={styles.formTitle}>Add Comment</Text>
-      <Controller
-        control={control}
-        rules={{ required: true, minLength: 4 }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            mode="outlined"
-            label="Author (min 4)"
-            error={!!errors["author"]}
-          />
-        )}
-        name="author"
-      />
-
       <Controller
         control={control}
         rules={{ required: true, minLength: 4 }}

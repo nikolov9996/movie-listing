@@ -6,7 +6,7 @@ import { RootStackParamList } from "static/Router";
 import { SCREENS } from "static/screens";
 import * as ImagePicker from "expo-image-picker";
 import { useDimensions } from "hooks/ui";
-import { editMovie, uploadImage } from "firebase/services";
+import { uploadImage } from "firebase/services";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { TextInput } from "react-native-paper";
 import Button from "components/Button/Button";
@@ -21,7 +21,6 @@ type Props = NativeStackScreenProps<
 >;
 
 interface FormState extends FieldValues {
-  creator?: string;
   title?: string;
   description?: string;
   image?: string;
@@ -42,15 +41,11 @@ const EditMovieScreen: React.FC<Props> = ({
   const {
     handleSubmit,
     control,
-    getValues,
     formState: { errors },
     setValue,
   } = useForm();
 
   useEffect(() => {
-    setValue("creator", movie?.creator, {
-      shouldValidate: true,
-    });
     setValue("genre", movie?.genre, {
       shouldValidate: true,
     });
@@ -182,23 +177,6 @@ const EditMovieScreen: React.FC<Props> = ({
             />
           )}
           name="genre"
-        />
-        <Controller
-          control={control}
-          rules={{ required: true, minLength: 4 }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              defaultValue={movie?.creator}
-              style={styles.input}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              mode="outlined"
-              label="Creator (min 4)"
-              error={!!errors["creator"]}
-            />
-          )}
-          name="creator"
         />
         <Button
           loading={loading}

@@ -69,6 +69,7 @@ export const uploadImage = async (imageUri: string) => {
 export const createMovie = async (movieData: CreateMovieType) => {
   const lastChange = new Date().getTime();
   const creatorId = getCurrentUser()?.uid;
+  const user = getCurrentUser();
 
   const movie: MovieType = {
     ...movieData,
@@ -76,6 +77,7 @@ export const createMovie = async (movieData: CreateMovieType) => {
     lastChange,
     comments: [],
     creatorId,
+    creator: user?.email as string,
   };
 
   try {
@@ -88,10 +90,15 @@ export const createMovie = async (movieData: CreateMovieType) => {
 
 export const editMovie = async (movieData: UpdateMovieType) => {
   try {
+    const user = getCurrentUser();
     const lastChange = new Date().getTime();
     const movieRef = doc(db, "movies", movieData.movieId as string);
 
-    await updateDoc(movieRef, { ...movieData, lastChange });
+    await updateDoc(movieRef, {
+      ...movieData,
+      lastChange,
+      creator: user?.email,
+    });
 
     return movieData.movieId;
   } catch (error) {
@@ -103,9 +110,10 @@ export const editMovie = async (movieData: UpdateMovieType) => {
 export const addComment = async (movieId: string, comment: CommentType) => {
   try {
     const movieRef = doc(db, "movies", movieId);
+    const user = getCurrentUser();
 
     await updateDoc(movieRef, {
-      comments: arrayUnion(comment),
+      comments: arrayUnion({ ...comment, author: user?.email }),
       rating: increment(comment.rating as number),
     });
     return true;
@@ -151,7 +159,6 @@ export async function getMovies() {
     });
 
     const moviesFromCache: MovieType[] = await saveMoviesToStorage(data);
-
     /* Always returns movies from cache! and check for movies from cache this means the data for image fetching will be saved and the app will run way faster */
     return suggestionsKey
       ? sortMovies(moviesFromCache, suggestionsKey)
