@@ -119,7 +119,6 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           />
         </TouchableOpacity>
         <Controller
-          defaultValue={"some Title"}
           control={control}
           rules={{ required: true, minLength: 4 }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -136,7 +135,6 @@ const AddMovieScreen: React.FC<Props> = ({ navigation: { navigate } }) => {
           name="title"
         />
         <Controller
-          defaultValue={"some Description but kinda long"}
           control={control}
           rules={{ required: true, minLength: 20 }}
           render={({ field: { onChange, onBlur, value } }) => (
