@@ -7,12 +7,13 @@ import { initializeApp } from "firebase/app";
 // import {...} from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAVAYJr9pTnndlpN66lFGLM-y_s668sKas",
-  authDomain: "movie-list-6b603.firebaseapp.com",
-  projectId: "movie-list-6b603",
-  storageBucket: "movie-list-6b603.appspot.com",
-  messagingSenderId: "852704487358",
-  appId: "1:852704487358:web:0eeb25703ebddc3a17bbef",
+  apiKey: "AIzaSyC2mIvSLh6WRpy2ZogIlqk59ZRIoCBevxc",
+  authDomain: "movieslist-49cde.firebaseapp.com",
+  projectId: "movieslist-49cde",
+  storageBucket: "movieslist-49cde.appspot.com",
+  messagingSenderId: "975628726138",
+  appId: "1:975628726138:web:c899fd1cd971f3b1cd30c3",
+  measurementId: "G-8PD0XNWQN5"
 };
 
 export const app = initializeApp(firebaseConfig);

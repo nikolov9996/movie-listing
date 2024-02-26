@@ -1,15 +1,29 @@
+import { useIsFocused } from "@react-navigation/native";
+import { removeValue } from "@zolv/array-utilities";
 import { getMovies } from "firebase/services";
 import { getNetworkStatus } from "hooks/utils";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { MovieGenre } from "static/enums";
 import { MovieType } from "static/types";
 
 const useHomeScreen = () => {
+  const isFocused = useIsFocused();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [movies, setMovies] = useState<MovieType[]>([]);
   const [apiData, setApiData] = useState<MovieType[]>([]);
   const [isOnline, setIsOnline] = useState<boolean | undefined>(true);
+  const [filterGenres, setFilterGenres] = useState<MovieGenre[]>([]);
+
+  function addGenreToFilter(genre: MovieGenre) {
+    if (filterGenres.includes(genre)) {
+      setFilterGenres((x) => removeValue({ arr: x, value: genre }));
+    } else {
+      setFilterGenres((x) => [...x, genre]);
+    }
+  }
 
   async function fetchData() {
     try {
@@ -29,10 +43,35 @@ const useHomeScreen = () => {
   }
 
   const search = (keyword: string) => {
-    const result = apiData.filter((movie) =>
-      movie.title?.toLocaleLowerCase().includes(keyword.toLowerCase())
-    );
-    setMovies(result);
+    if (searchQuery.length && filterGenres.length) {
+      const result = apiData.filter((movie) =>
+        movie.title?.toLocaleLowerCase().includes(keyword.toLowerCase())
+      );
+
+      const finalResult = result.filter((movie) =>
+        filterGenres.some((x) => x === (movie.genre as string))
+      );
+
+      setMovies(finalResult);
+      return;
+    }
+
+    if (searchQuery.length) {
+      const result = apiData.filter((movie) =>
+        movie.title?.toLocaleLowerCase().includes(keyword.toLowerCase())
+      );
+      setMovies(result);
+      return;
+    }
+
+    if (filterGenres.length) {
+      const result = apiData.filter((movie) =>
+        filterGenres.some((x) => x === (movie.genre as string))
+      );
+
+      setMovies(result);
+      return;
+    }
   };
 
   useEffect(() => {
@@ -42,19 +81,27 @@ const useHomeScreen = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (searchQuery.length) {
+  const refilter = () => {
+    if(!apiData.length) return;
+    if (searchQuery.length || filterGenres.length) {
       search(searchQuery);
     } else {
       setMovies(apiData);
     }
-  }, [searchQuery]);
+  };
+
+  useEffect(() => {
+    refilter();
+  }, [searchQuery, filterGenres]);
 
   return {
     loading: loading ?? movies.length,
     movies,
     searchQuery,
     isOnline,
+    filterGenres,
+    refilter,
+    addGenreToFilter,
     setSearchQuery,
     fetchData,
     search,
