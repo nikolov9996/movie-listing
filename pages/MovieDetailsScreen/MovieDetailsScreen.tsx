@@ -100,7 +100,7 @@ const MovieDetailsScreen: React.FC<Props> = ({
 
             <Text style={styles.description}>
               <Text style={styles.boldText}>Genre: </Text>
-              {movie?.genre}
+              {movie?.genre?.join(', ')}
             </Text>
             <Divider style={{ marginBottom: 8 }} />
           </Card.Content>

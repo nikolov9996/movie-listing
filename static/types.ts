@@ -1,3 +1,5 @@
+import { MovieGenre } from "./enums";
+
 export type CommentType = {
   author?: string;
   comment?: string;
@@ -12,7 +14,7 @@ export type MovieType = {
   comments?: CommentType[];
   description?: string;
   image?: string;
-  genre?: string;
+  genre?: MovieGenre[];
   movieId?: string;
   lastChange?: number;
 };
@@ -22,7 +24,7 @@ export interface CreateMovieType {
   title?: string;
   description?: string;
   image?: string;
-  genre?: string;
+  genre?: MovieGenre[];
 }
 
 export interface UpdateMovieType extends CreateMovieType {

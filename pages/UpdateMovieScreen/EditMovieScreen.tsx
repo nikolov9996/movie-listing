@@ -8,12 +8,13 @@ import * as ImagePicker from "expo-image-picker";
 import { useDimensions } from "hooks/ui";
 import { uploadImage } from "firebase/services";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { TextInput } from "react-native-paper";
+import { Provider, TextInput } from "react-native-paper";
 import Button from "components/Button/Button";
 import useEditMovieScreen from "./EditMovieScreen.logic";
 import LoadingLayout from "pages/LoadingLayout";
-import Picker from "components/Picker/Picker";
 import { syncCacheOnDelete } from "hooks/storage";
+import GenrePicker from "components/GenrePicher/GenrePicker";
+import { MovieGenre } from "static/enums";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -24,7 +25,7 @@ interface FormState extends FieldValues {
   title?: string;
   description?: string;
   image?: string;
-  genre?: string;
+  genre?: MovieGenre[];
 }
 
 const EditMovieScreen: React.FC<Props> = ({
@@ -120,74 +121,76 @@ const EditMovieScreen: React.FC<Props> = ({
   }
 
   return (
-    <KeyboardAvoidingView>
-      <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={handleImagePicker} activeOpacity={0.7}>
-          <Image
-            style={styles.image}
-            source={
-              image ? { uri: image.assets[0].uri } : { uri: movie?.image }
-            }
+    <Provider theme={{ dark: false }}>
+      <KeyboardAvoidingView>
+        <ScrollView style={styles.container}>
+          <TouchableOpacity onPress={handleImagePicker} activeOpacity={0.7}>
+            <Image
+              style={styles.image}
+              source={
+                image ? { uri: image.assets[0].uri } : { uri: movie?.image }
+              }
+            />
+          </TouchableOpacity>
+          <Controller
+            control={control}
+            rules={{ required: true, minLength: 4 }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                defaultValue={movie?.title}
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                mode="outlined"
+                label="Title (min 4)"
+                error={!!errors["title"]}
+              />
+            )}
+            name="title"
           />
-        </TouchableOpacity>
-        <Controller
-          control={control}
-          rules={{ required: true, minLength: 4 }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              defaultValue={movie?.title}
-              style={styles.input}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              mode="outlined"
-              label="Title (min 4)"
-              error={!!errors["title"]}
-            />
-          )}
-          name="title"
-        />
-        <Controller
-          control={control}
-          rules={{ required: true, minLength: 20 }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              defaultValue={movie?.description}
-              style={styles.input}
-              multiline
-              numberOfLines={3}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              mode="outlined"
-              label="Description (min 20)"
-              error={!!errors["description"]}
-            />
-          )}
-          name="description"
-        />
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { value } }) => (
-            <Picker
-              onValueChange={setValue}
-              selectedValue={value}
-              error={!!errors["genre"]}
-            />
-          )}
-          name="genre"
-        />
-        <Button
-          loading={loading}
-          style={styles.button}
-          mode={"contained"}
-          children
-          label="Save"
-          onPress={handleSubmit(onSubmit)}
-        />
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <Controller
+            control={control}
+            rules={{ required: true, minLength: 20 }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                defaultValue={movie?.description}
+                style={styles.input}
+                multiline
+                numberOfLines={3}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                mode="outlined"
+                label="Description (min 20)"
+                error={!!errors["description"]}
+              />
+            )}
+            name="description"
+          />
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { value } }) => (
+              <GenrePicker
+                error={!!errors["genre"]}
+                onValueChange={setValue}
+                value={value}
+              />
+            )}
+            name="genre"
+          />
+          <Button
+            loading={loading}
+            style={styles.button}
+            mode={"contained"}
+            children
+            label="Save"
+            onPress={handleSubmit(onSubmit)}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </Provider>
   );
 };
 

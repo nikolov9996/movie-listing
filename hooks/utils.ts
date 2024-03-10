@@ -33,7 +33,7 @@ export async function getNetworkStatus() {
 
 export function sortMovies(movies: MovieType[], suggestionsKey: string) {
   return movies.sort((a) => {
-    const valueA = a.genre === suggestionsKey;
+    const valueA = a.genre && a.genre[0] === suggestionsKey;
 
     if (valueA) {
       return -1;

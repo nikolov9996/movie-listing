@@ -28,9 +28,11 @@ const useHomeScreen = () => {
   async function fetchData() {
     try {
       setLoading(true);
-      const response = await getMovies();
-      setApiData(response);
-      setMovies(response);
+      setTimeout(async () => {
+        const response = await getMovies();
+        setApiData(response);
+        setMovies(response);
+      }, 600);
     } catch (error) {
       console.log("====================================");
       console.log(error);
@@ -49,7 +51,7 @@ const useHomeScreen = () => {
       );
 
       const finalResult = result.filter((movie) =>
-        filterGenres.some((x) => x === (movie.genre as string))
+        filterGenres.some((x) => movie?.genre?.includes(x))
       );
 
       setMovies(finalResult);
@@ -66,7 +68,7 @@ const useHomeScreen = () => {
 
     if (filterGenres.length) {
       const result = apiData.filter((movie) =>
-        filterGenres.some((x) => x === (movie.genre as string))
+        filterGenres.some((x) => movie?.genre?.includes(x))
       );
 
       setMovies(result);
@@ -82,7 +84,7 @@ const useHomeScreen = () => {
   }, []);
 
   const refilter = () => {
-    if(!apiData.length) return;
+    if (!apiData.length) return;
     if (searchQuery.length || filterGenres.length) {
       search(searchQuery);
     } else {

@@ -17,7 +17,7 @@ export const storeSuggestions = async (value: any) => {
     );
     if (values) {
       current = JSON.parse(values);
-      current.push(value);
+      current.push(value[0]);
       if (current.length > 6) {
         current.splice(0, 1);
       }
